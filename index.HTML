@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beren'im İçin Sonsuz Sevgi</title>
+    <style>
+        :root {
+            --bg-white: #ffffff;
+            --main-black: #000000;
+            --main-text-color: #333333;
+            --input-bg: #fdfdfd; 
+            --soft-font: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --card-width: 400px; 
+            --card-margin: 40px; 
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; border-radius: 25px; }
+
+        body {
+            font-family: var(--soft-font);
+            background-color: var(--bg-white);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- 1. GİRİŞ EKRANI --- */
+        #login-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-white);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 100; transition: opacity 0.8s ease;
+        }
+
+        #login-container { text-align: center; width: 90%; max-width: 400px; }
+        
+        .main-logo { 
+            max-width: 288px; 
+            margin-bottom: 35px; 
+            border-radius: 0; 
+            transition: transform 0.4s ease; 
+        }
+        .main-logo:hover { transform: scale(1.05); }
+        
+        .input-group { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+
+        input[type="text"], input[type="password"] {
+            width: 100%; padding: 18px;
+            border: 2px solid #eee; outline: none; font-size: 16px;
+            transition: all 0.4s ease; 
+        }
+        input:hover, input:focus { 
+            transform: scale(1.03); 
+            border-color: var(--main-black); 
+        }
+
+        .checkbox-area { 
+            display: flex; align-items: center; justify-content: center; 
+            gap: 10px; margin: 15px 0; font-size: 14px; color: #555;
+            transition: transform 0.3s ease;
+        }
+        .checkbox-area:hover { transform: scale(1.02); }
+
+        input[type="checkbox"] { 
+            accent-color: var(--main-black); width: 18px; height: 18px; cursor: pointer; 
+        }
+
+        button#login-btn {
+            width: 100%; padding: 18px; background: var(--main-black);
+            color: white; border: none; font-weight: bold; cursor: pointer;
+            transition: all 0.4s ease;
+        }
+        button#login-btn:hover { 
+            background: #333; 
+            transform: scale(1.05); 
+        }
+
+        /* --- 2. HİKAYE EKRANI --- */
+        #story-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-white);
+            display: none; justify-content: center; align-items: center;
+            z-index: 90;
+        }
+        
+        #story-text {
+            font-size: 34px;
+            text-align: center;
+            color: var(--main-black);
+            max-width: 80%;
+            opacity: 0;
+            transition: opacity 1.2s ease-in-out;
+            font-weight: 400;
+            line-height: 1.4;
+        }
+
+        /* --- 3. ANA ARA YÜZ --- */
+        #main-content {
+            display: none; opacity: 0; width: 100%; height: 100%;
+            transition: opacity 1s ease;
+        }
+
+        .carousel-container {
+            position: relative; width: 100%; height: 100%;
+            display: flex; align-items: center; overflow: hidden;
+        }
+
+        .carousel-track {
+            display: flex; align-items: center;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            will-change: transform;
+        }
+
+        .card {
+            min-width: var(--card-width);
+            width: var(--card-width);
+            height: 550px;
+            margin: 0 var(--card-margin);
+            background: #fff;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            opacity: 0.2;
+            transform: scale(0.85);
+            transition: all 0.6s ease;
+            border: 1px solid #f0f0f0;
+            flex-shrink: 0; 
+        }
+
+        .card.active {
+            opacity: 1;
+            transform: scale(1.05);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+
+        .card-image { width: 100%; height: 60%; object-fit: cover; border-radius: 25px 25px 0 0; }
+        .card-content { padding: 25px; text-align: center; overflow-y: auto; height: 40%; }
+        .card-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--main-black); }
+        .card-description { font-size: 14px; color: #666; line-height: 1.4; }
+
+        .nav-btn {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: white; border: 2px solid var(--main-black);
+            color: var(--main-black); width: 60px; height: 60px;
+            border-radius: 50%; font-size: 25px; cursor: pointer; z-index: 10;
+            transition: 0.3s;
+        }
+        .nav-btn:hover { background: var(--main-black); color: white; transform: translateY(-50%) scale(1.1); }
+        .prev-btn { left: 30px; }
+        .next-btn { right: 30px; }
+
+        .pagination-dots {
+            position: absolute; bottom: 30px; left: 50%;
+            transform: translateX(-50%); display: flex; gap: 10px;
+        }
+        .dot { width: 30px; height: 5px; background: #eee; cursor: pointer; transition: 0.3s; }
+        .dot.active { background: var(--main-black); width: 50px; }
+
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <div id="login-container">
+            <img src="logo.png" alt="Logo" class="main-logo">
+            <div class="input-group">
+                <input type="text" id="username" placeholder="İsim Soyisim">
+                <input type="password" id="password" placeholder="Şifre (GG.AA.YYYY)">
+                <div class="checkbox-area">
+                    <input type="checkbox" id="heart-check">
+                    <label for="heart-check">Bu çocuğun kalbine girmeye hazır mısın?</label>
+                </div>
+                <button id="login-btn" onclick="checkLogin()">Giriş Yap</button>
+                <p id="error-msg" style="color:red; margin-top:10px; font-size:14px;"></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="story-screen">
+        <div id="story-text"></div>
+    </div>
+
+    <div id="main-content">
+        <div class="carousel-container">
+            <button class="nav-btn prev-btn" onclick="moveSlide(-1)">&#10094;</button>
+            <div class="carousel-track" id="carousel-track"></div>
+            <button class="nav-btn next-btn" onclick="moveSlide(1)">&#10095;</button>
+            <div class="pagination-dots" id="pagination-dots"></div>
+        </div>
+    </div>
+
+    <script>
+        const cardsData = [
+            { img: "foto1.jpg", title: "Güzelçamda ki ilk tatilimiz", desc: "Seninle olduğum her an güzel fakat bugünün yeri ayrı" },
+            { img: "foto2.jpg", title: "İlk maç izlediğimiz gün", desc: "Daha önce izlediğim maçlar güzeldi ama seninle bir ayrı güzel" },
+            { img: "foto3.jpg", title: "Benden hoşlandığın yer", desc: "Bugün doğum günümdü fakat dünyanın bana verdiği en güzel hediye sen ve senin sevgin" },
+            { img: "foto4.jpg", title: "Pişti olduğumuz gün", desc: "bugün güzel ama bu günden güzel olan bir şey varsa o da sensin" },
+            { img: "foto5.jpg", title: "Senin varlığın", desc: "senin varlığını hissettiğim her maçta 1 0 öndeyim" },
+            { img: "foto6.jpg", title: "Bulanıkta olsa hoş bir gece", desc: "bulanık ama en kıymetlilerden biri" },
+            { img: "foto7.jpg", title: "Makyaj malzemesi öğrettiğin gün", desc: "Daha önce hiçbir dersi bu kadar sevmemiştim" },
+            { img: "foto8.jpg", title: "Beni yolcu ettiğin gün", desc: "Bugün belki yan yana değildik ama kalbim hep seninle attı ve atacak" }
+        ];
+
+        const storyLine = [
+            { text: "Hatırlıyor musun.", time: 2500 },
+            { text: "Seninle şans eseri bir kafenin en köşe masasında tanıştık", time: 4000 },
+            { text: "Ve bugün bunca zamandan sonra tekrar birbirimizi bulduk", time: 4000 },
+            { text: "İyi ki seni tanımışım Sevgilim", time: 2500 }
+        ];
+
+        let currentIndex = 0;
+
+        function checkLogin() {
+            const u = document.getElementById("username").value.toLowerCase().trim();
+            const p = document.getElementById("password").value;
+            const c = document.getElementById("heart-check").checked;
+
+            if(u === "beren bayraktaroğlu" && (p === "12.09.26" || p === "31.08.25") && c) {
+                document.getElementById("login-screen").style.opacity = "0";
+                setTimeout(() => {
+                    document.getElementById("login-screen").style.display = "none";
+                    document.getElementById("story-screen").style.display = "flex";
+                    showStory(0);
+                }, 800);
+            } else if (!c && u === "beren bayraktaroğlu" && (p === "12.09.26" || p === "31.08.25")) {
+                document.getElementById("error-msg").innerText = "Önce kalbime girmeyi onaylamalısın! :)";
+            } else {
+                document.getElementById("error-msg").innerText = "Bilgileri kontrol eder misin sevgilim?";
+            }
+        }
+
+        function showStory(idx) {
+            const st = document.getElementById("story-text");
+            if (idx < storyLine.length) {
+                st.innerText = storyLine[idx].text;
+                st.style.opacity = "1";
+                setTimeout(() => {
+                    st.style.opacity = "0";
+                    setTimeout(() => showStory(idx + 1), 1200);
+                }, storyLine[idx].time);
+            } else {
+                transitionToMain();
+            }
+        }
+
+        function transitionToMain() {
+            const ss = document.getElementById("story-screen");
+            const mc = document.getElementById("main-content");
+            ss.style.opacity = "0";
+            setTimeout(() => {
+                ss.style.display = "none";
+                initCarousel();
+                mc.style.display = "block";
+                setTimeout(() => {
+                    mc.style.opacity = "1";
+                    updateCarousel();
+                }, 50);
+            }, 1000);
+        }
+
+        function initCarousel() {
+            const track = document.getElementById("carousel-track");
+            const dots = document.querySelector(".pagination-dots");
+            track.innerHTML = ""; dots.innerHTML = "";
+            cardsData.forEach((d, i) => {
+                const card = document.createElement("div");
+                card.className = "card";
+                card.innerHTML = `<img src="${d.img}" class="card-image"><div class="card-content"><h3 class="card-title">${d.title}</h3><p class="card-description">${d.desc}</p></div>`;
+                track.appendChild(card);
+                const dot = document.createElement("div");
+                dot.className = "dot";
+                dot.onclick = () => jumpToSlide(i);
+                dots.appendChild(dot);
+            });
+        }
+
+        function updateCarousel() {
+            const track = document.getElementById("carousel-track");
+            const cards = document.querySelectorAll(".card");
+            const dots = document.querySelectorAll(".dot");
+            const step = 480; 
+            const offset = (window.innerWidth / 2) - (400 / 2 + 40) - (currentIndex * step);
+            track.style.transform = `translateX(${offset}px)`;
+            cards.forEach((c, i) => i === currentIndex ? c.classList.add("active") : c.classList.remove("active"));
+            dots.forEach((d, i) => i === currentIndex ? d.classList.add("active") : d.classList.remove("active"));
+        }
+
+        function moveSlide(dir) {
+            currentIndex = (currentIndex + dir + cardsData.length) % cardsData.length;
+            updateCarousel();
+        }
+
+        function jumpToSlide(i) {
+            currentIndex = i;
+            updateCarousel();
+        }
+
+        window.addEventListener('resize', updateCarousel);
+    </script>
+</body>
+</html>
